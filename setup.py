@@ -8,10 +8,9 @@ setup(
   author = 'Roni Gold',                  
   author_email = 'ronigoldsmid@gmail.com', 
   url = 'https://github.com/ronigold',
-  download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/ronigold/modelboost/archive/0.0.1.tar.gz',   
   keywords = ['machine learning', 'deep learning', 'model', 'optimizing'],  
-  install_requires=[            # I get to this in a second
-          'pandas',
+  install_requires=[            
           'sklearn',
 		  'IPython',
 		  'tqdm',
