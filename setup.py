@@ -11,8 +11,13 @@ setup(
   download_url = 'https://github.com/user/reponame/archive/v_01.tar.gz',    # I explain this later on
   keywords = ['machine learning', 'deep learning', 'model', 'optimizing'],  
   install_requires=[            # I get to this in a second
-          'validators',
-          'beautifulsoup4',
+          'pandas',
+          'sklearn',
+		  'IPython',
+		  'tqdm',
+		  'catboost',
+		  'xgboost',
+		  'lightgbm'
       ],
   classifiers=[
     'Development Status :: 3 - Alpha',
