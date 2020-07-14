@@ -3,13 +3,13 @@ from distutils.core import setup
 setup(
   name = 'modelboost',   
   packages = ['modelboost'],  
-  version = '0.0.3',      
+  version = '0.0.4',      
   license='MIT',      
   description = 'A package that makes the process of finding the model and optimizing the model automated and simple',
   author = 'Roni Gold',                  
   author_email = 'ronigoldsmid@gmail.com', 
   url = 'https://github.com/ronigold',
-  download_url = 'https://github.com/ronigold/modelboost/archive/0.0.3.tar.gz',   
+  download_url = 'https://github.com/ronigold/modelboost/archive/0.0.4.tar.gz',   
   keywords = ['machine learning', 'deep learning', 'model', 'optimizing'],  
   install_requires=[            
           'sklearn',
