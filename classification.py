@@ -1,24 +1,23 @@
+from ipywidgets import Output
+import warnings
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import time
+from IPython import display
+from tqdm.notebook import trange, tqdm
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, GradientBoostingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.calibration import CalibratedClassifierCV
+
 def model_selection(X_train, X_test, y_train, y_test):
-    
-    from ipywidgets import Output
-    import warnings
-    import pandas as pd
-    from sklearn.model_selection import train_test_split
-    from sklearn import metrics
-    import time
-    from IPython import display
-    from tqdm.notebook import trange, tqdm
-    
-    from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, GradientBoostingClassifier
-    from sklearn.neighbors import KNeighborsClassifier
-    from sklearn.linear_model import LogisticRegression
-    from xgboost import XGBClassifier
-    from catboost import CatBoostClassifier
-    from lightgbm import LGBMClassifier
-    from sklearn.tree import DecisionTreeClassifier
-    from sklearn.linear_model import SGDClassifier
-    from sklearn.calibration import CalibratedClassifierCV
-    
+        
     warnings.filterwarnings('ignore')
 
     prediction_type = get_prediction_type(y_train)
@@ -34,7 +33,7 @@ def model_selection(X_train, X_test, y_train, y_test):
     for model in tqdm(models_list):
         model[0].fit(X_train, y_train)
         
-        df_metrics = create_df_netrics(model, df_metrics, prediction_type, y_test)
+        df_metrics = create_df_metrics(model, df_metrics, prediction_type, X_test, y_test)
             
         with out:
             html = (df_metrics.style
@@ -45,7 +44,7 @@ def model_selection(X_train, X_test, y_train, y_test):
         
     return df_metrics
 
-def create_df_netrics(model, df_metrics, prediction_type, y_true):
+def create_df_metrics(model, df_metrics, prediction_type, X_test, y_true):
     
     y_pred = model[0].predict(X_test)
     pred_proba = model[0].predict_proba(X_test)
