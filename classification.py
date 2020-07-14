@@ -94,7 +94,7 @@ def create_list_models(X_train, y_train, seed = 42):
 
 def get_prediction_type(y_train):
         prediction_type = 'multiclass'
-        if len(y_test.value_counts()) == 2:
+        if len(y_train.value_counts()) == 2:
             prediction_type = 'binary'
         return prediction_type
 
