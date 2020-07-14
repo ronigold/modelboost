@@ -1,4 +1,5 @@
 from distutils.core import setup
+
 setup(
   name = 'modelboost',   
   packages = ['modelboost'],  
@@ -8,7 +9,7 @@ setup(
   author = 'Roni Gold',                  
   author_email = 'ronigoldsmid@gmail.com', 
   url = 'https://github.com/ronigold',
-  download_url = 'https://github.com/ronigold/modelboost/archive/0.0.2.tar.gz',   
+  download_url = 'https://github.com/ronigold/modelboost/archive/0.0.3.tar.gz',   
   keywords = ['machine learning', 'deep learning', 'model', 'optimizing'],  
   install_requires=[            
           'sklearn',
