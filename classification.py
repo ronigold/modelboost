@@ -15,9 +15,12 @@ from lightgbm import LGBMClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.metrics import plot_confusion_matrix
+import matplotlib.pyplot as plt 
+from IPython.core.display import display as display_core, HTML
 
 def model_selection(X_train, X_test, y_train, y_test):
-        
+    display_core(HTML("<style>div.output_scroll { height: 60em; }</style>"))
     warnings.filterwarnings('ignore')
 
     prediction_type = get_prediction_type(y_train)
@@ -41,7 +44,9 @@ def model_selection(X_train, X_test, y_train, y_test):
                       .apply(highlight_max))
             display.clear_output(wait=True)
             display.display(html)
-        
+        disp = plot_confusion_matrix(model[0], X_test, y_test)
+        disp.ax_.set_title(model[1])
+        plt.show()
     return df_metrics
 
 def create_df_metrics(model, df_metrics, prediction_type, X_test, y_true):
