@@ -26,17 +26,22 @@ import ipywidgets as widgets
 from IPython.display import clear_output
 
 
-def model_selection(X_train, X_test, y_train, y_test):
-    warnings.filterwarnings('ignore')
-    toggle = widgets.ToggleButtons(
+def model_selection(X_train_user, X_test_user, y_train_user, y_test_user):
+	global X_train, X_test, y_train, y_test
+	warnings.filterwarnings('ignore')
+	X_train = X_train_user
+	X_test = X_test_user
+	y_train = y_train_user
+	y_test = y_test_user
+	toggle = widgets.ToggleButtons(
                     options=['Fast', 'Regular', 'Slow'],
                     description='Speed:',
                     index = None,
                     disabled=False,
                     button_style='',
                     tooltips=['Without hyper-parameters optimization', 'Fast hyper-parameters optimization', 'Full hyper-parameters optimization'])
-    toggle.observe(build_models, names=['value'])
-    display_core(toggle)
+	toggle.observe(build_models, names=['value'])
+	display_core(toggle)
 
 def build_models(Speed):
     global df_metrics, models_list, list_model_name
@@ -106,6 +111,7 @@ def make_confusion_matrix():
             options = list_model_name,
             description='CM:',
             disabled=False,
+			index = None,
             button_style='')
     button.observe(on_button_clicked, names=['value'])
     dis(button)
