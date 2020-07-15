@@ -1,9 +1,12 @@
+import pandas as pd
+import numpy as np
 from ipywidgets import Output
 import warnings
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import time
+import itertools  
 from IPython import display
 from tqdm.notebook import trange, tqdm
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, GradientBoostingClassifier
@@ -15,14 +18,40 @@ from lightgbm import LGBMClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt 
 from IPython.core.display import display as display_core, HTML
+from IPython.display import display as dis
+import ipywidgets as widgets
+from IPython.display import clear_output
+
 
 def model_selection(X_train, X_test, y_train, y_test):
-    display_core(HTML("<style>div.output_scroll { height: 60em; }</style>"))
     warnings.filterwarnings('ignore')
+    toggle = widgets.ToggleButtons(
+                    options=['Fast', 'Regular', 'Slow'],
+                    description='Speed:',
+                    index = None,
+                    disabled=False,
+                    button_style='',
+                    tooltips=['Without hyper-parameters optimization', 'Fast hyper-parameters optimization', 'Full hyper-parameters optimization'])
+    toggle.observe(build_models, names=['value'])
+    display_core(toggle)
 
+def build_models(Speed):
+    global df_metrics, models_list, list_model_name
+    
+    list_model_name = ['Logistic Regression',
+                       'KNN',
+                       'Decision Tree',
+                       'SGD',
+                       'Random Forest',
+                       'Gradient Boosting',
+                       'XGBoost',
+                       'LGBM',
+                       'CatBoost']
+    
+    display.clear_output(wait=True)
     prediction_type = get_prediction_type(y_train)
     if prediction_type == 'multiclass':
             list_metrics = ['Accuracy', 'F1', '1 - log loss', '1 - MSE']
@@ -30,25 +59,59 @@ def model_selection(X_train, X_test, y_train, y_test):
             list_metrics = ['Accuracy', 'AUC', 'F1', '1 - log loss', '1 - MSE']
     models_list = create_list_models(X_train, y_train)
     df_metrics = pd.DataFrame(columns=list_metrics)
-    out = Output()
-    display.display(out)
-    
-    for model in tqdm(models_list):
-        model[0].fit(X_train, y_train)
+    if Speed['new'] == 'Fast':
+        fast_model_selection(df_metrics, prediction_type, X_test, y_test)
+    if Speed['new'] == 'Regular':
+        regular_model_selection(df_metrics)
+    if Speed['new'] == 'Slow':
+        slow_model_selection(df_metrics)
         
-        df_metrics = create_df_metrics(model, df_metrics, prediction_type, X_test, y_test)
-            
-        with out:
-            html = (df_metrics.style
-                      .apply(highlight_min)
-                      .apply(highlight_max))
-            display.clear_output(wait=True)
-            display.display(html)
-        disp = plot_confusion_matrix(model[0], X_test, y_test)
-        disp.ax_.set_title(model[1])
-        plt.show()
-    return df_metrics
 
+def fast_model_selection(df_metrics, prediction_type, X_test, y_test):
+        global confusion_matrix_dict
+        out = Output()
+        display.display(out)
+        confusion_matrix_dict = {}
+        for model in tqdm(models_list):
+            
+            model[0].fit(X_train, y_train)
+
+            df_metrics = create_df_metrics(model, df_metrics, prediction_type, X_test, y_test)
+
+            with out:
+                html = (df_metrics.style
+                          .apply(highlight_min)
+                          .apply(highlight_max))
+                display.clear_output(wait=True)
+                display.display(html)
+                confusion_matrix_dict[model[1]] = [model[0], y_test, model[0].predict(X_test)]
+
+        make_confusion_matrix()         
+            
+def regular_model_selection(df_metrics):
+    print('to do fast optimizotion')
+    
+def slow_model_selection(df_metrics):
+    print('to do full optimizotion')
+
+def make_confusion_matrix():
+
+    def on_button_clicked(selection):
+        with out:
+            clear_output(wait=True)
+            x = plot_confusion_matrix(selection['new'])
+            x.show()
+
+    button = widgets.ToggleButtons(
+            options = list_model_name,
+            description='CM:',
+            disabled=False,
+            button_style='')
+    button.observe(on_button_clicked, names=['value'])
+    dis(button)
+    out = Output()
+    dis(out)        
+            
 def create_df_metrics(model, df_metrics, prediction_type, X_test, y_true):
     
     y_pred = model[0].predict(X_test)
@@ -127,3 +190,32 @@ def highlight_min(data, color='red'):
         is_min = data == data.min().min()
         return pd.DataFrame(np.where(is_min, attr, ''),
                             index=data.index, columns=data.columns)
+    
+def plot_confusion_matrix(model_name,  cmap=plt.cm.Blues, normalize=False):
+    
+    model = confusion_matrix_dict[model_name][0]
+    y_true = confusion_matrix_dict[model_name][1]
+    y_pred = confusion_matrix_dict[model_name][2]
+    cm = confusion_matrix(y_true, y_pred)
+    classes = model.classes_
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+    
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(model_name)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    return plt
