@@ -195,7 +195,7 @@ def highlight_min(data, color='red'):
     else:  # from .apply(axis=None)
         is_min = data == data.min().min()
         return pd.DataFrame(np.where(is_min, attr, ''),
-                            index=data.index, columns=data.columns)
+                            index=data.index, columns=data.columns) 
 
 def plot_confusion_matrix(model_name,  cmap=plt.cm.Blues, normalize=False):
     
