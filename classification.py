@@ -27,21 +27,21 @@ from IPython.display import clear_output
 
 
 def model_selection(X_train_user, X_test_user, y_train_user, y_test_user):
-	global X_train, X_test, y_train, y_test
-	warnings.filterwarnings('ignore')
-	X_train = X_train_user
-	X_test = X_test_user
-	y_train = y_train_user
-	y_test = y_test_user
-	toggle = widgets.ToggleButtons(
+    global X_train, X_test, y_train, y_test
+    warnings.filterwarnings('ignore')
+    X_train = X_train_user
+    X_test = X_test_user
+    y_train = y_train_user
+    y_test = y_test_user
+    toggle = widgets.ToggleButtons(
                     options=['Fast', 'Regular', 'Slow'],
                     description='Speed:',
                     index = None,
                     disabled=False,
                     button_style='',
                     tooltips=['Without hyper-parameters optimization', 'Fast hyper-parameters optimization', 'Full hyper-parameters optimization'])
-	toggle.observe(build_models, names=['value'])
-	display_core(toggle)
+    toggle.observe(build_models, names=['value'])
+    display_core(toggle)
 
 def build_models(Speed):
     global df_metrics, models_list, list_model_name
@@ -70,7 +70,7 @@ def build_models(Speed):
         regular_model_selection(df_metrics)
     if Speed['new'] == 'Slow':
         slow_model_selection(df_metrics)
-        
+
 
 def fast_model_selection(df_metrics, prediction_type, X_test, y_test):
         global confusion_matrix_dict
@@ -92,10 +92,10 @@ def fast_model_selection(df_metrics, prediction_type, X_test, y_test):
                 confusion_matrix_dict[model[1]] = [model[0], y_test, model[0].predict(X_test)]
 
         make_confusion_matrix()         
-            
+
 def regular_model_selection(df_metrics):
     print('to do fast optimizotion')
-    
+
 def slow_model_selection(df_metrics):
     print('to do full optimizotion')
 
@@ -111,13 +111,13 @@ def make_confusion_matrix():
             options = list_model_name,
             description='CM:',
             disabled=False,
-			index = None,
+            index = None,
             button_style='')
     button.observe(on_button_clicked, names=['value'])
     dis(button)
     out = Output()
     dis(out)        
-            
+
 def create_df_metrics(model, df_metrics, prediction_type, X_test, y_true):
     
     y_pred = model[0].predict(X_test)
@@ -140,7 +140,7 @@ def create_df_metrics(model, df_metrics, prediction_type, X_test, y_true):
         df_metrics.loc[model[1]] = {'Accuracy': accuracy, 'AUC': auc, 'F1': f1, '1 - log loss': log_loss, '1 - MSE': mse}
         
     return df_metrics
-        
+
 def create_list_models(X_train, y_train, seed = 42):
     models_list = []
     lr = LogisticRegression(random_state=seed)
@@ -196,7 +196,7 @@ def highlight_min(data, color='red'):
         is_min = data == data.min().min()
         return pd.DataFrame(np.where(is_min, attr, ''),
                             index=data.index, columns=data.columns)
-    
+
 def plot_confusion_matrix(model_name,  cmap=plt.cm.Blues, normalize=False):
     
     model = confusion_matrix_dict[model_name][0]
